@@ -7,16 +7,18 @@ This backend environment is created using Node js and Express Js. Here, I have f
 
 #### Step 1
 - Clone the repository  `` git clone https://github.com/ravanspell/Accenture-Backend.git``.
- ####  Step2
+####  Step 2
+- Checkout to the ``develop`` branch (``git checkout develop``). 
+ ####  Step 3
 - Run `` npm i `` to install dependencies.
-####  Step3
+####  Step 4
 - Rename ``.env.example`` file to``.env``.
-####  Step4
+####  Step 5
 - Create a database called ``accenture`` in your MySQL server.
 
-####  Step5
+####  Step6
 - Add your database configurations to the ``.env`` file correctly.
-#### Step6
+#### Step7
 - Run `` npm run dev``
 
 
