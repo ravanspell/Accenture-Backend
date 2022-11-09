@@ -1,9 +1,8 @@
 import { config } from 'dotenv';
-import { join } from 'path';
-import path from 'path';
+import path, { join } from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
-config({ path: join(__dirname, '../../.env') });
+config({ path: join(dirname, '../../.env') });

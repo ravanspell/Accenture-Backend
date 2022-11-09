@@ -1,34 +1,44 @@
+import TeacherService from '../services/teacher.service.js';
 import Controller from './controller.js';
-import TeacherModel from '../models/teacher.model.js';
+import responseWithData from '../transformers/responseWithData.js';
 
 class Teacher extends Controller {
   constructor() {
     super();
     this.create = this.create.bind(this);
     this.get = this.get.bind(this);
+    this.teacherService = TeacherService;
   }
 
   async create(req, res) {
     try {
+      const reqBody = req.body;
+      // set validation rules
       const validationSchema = {
-        firstName: 'required|string|max:10|regExp:[a-zA-Z ]|alpha',
-        address: 'required|string',
+        name: 'required|string|max:225|regExp:[a-zA-Z ]|alpha',
+        email: 'required|string|email',
+        subject: 'required|string',
+        contactNumber: 'required|string',
       };
+      // validate user inputs
+      const { validation, error } = await this.validateInput(reqBody, validationSchema);
+      if (!validation) {
+        return this.errorResponse(res, error, true);
+      }
 
-      await this.validateInput(req.body, validationSchema);
-      const response = await TeacherModel.create(req.body);
-      this.jsonResponse(res, this.statusCode.CREATED, response);
+      const response = await this.teacherService.createTeacher(reqBody);
+      return this.jsonResponse(res, this.statusCode.CREATED, response);
     } catch (error) {
-      this.jsonResponse(res, this.statusCode.CREATED, error.message);
+      return this.errorResponse(res, error);
     }
   }
 
   async get(req, res) {
     try {
-      const response = await TeacherModel.findAll();
-      this.jsonResponse(res, this.statusCode.CREATED, response);
+      const { rows } = await this.teacherService.fetchTeachers();
+      return this.jsonResponse(res, this.statusCode.OK, responseWithData(rows));
     } catch (error) {
-      this.jsonResponse(res, this.statusCode.CREATED, error.message);
+      return this.errorResponse(res, error);
     }
   }
 }

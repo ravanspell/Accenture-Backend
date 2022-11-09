@@ -1,17 +1,19 @@
-import TeacherModel from '../models/teacher.model.js';
+import { TeacherModal } from '../models/index.js';
 
 class TeacherRepository {
   constructor() {
-    this.getTeachers = this.getTeachers.bind(this);
+    this.create = this.create.bind(this);
+    this.get = this.get.bind(this);
+    this.teacherModal = TeacherModal;
   }
 
   create(data) {
-    return TeacherModel.create(data);
+    return this.teacherModal.create(data);
   }
 
   get() {
-    return TeacherModel.findAll();
+    return this.teacherModal.findAndCountAll();
   }
 }
 
-export default TeacherRepository;
+export default new TeacherRepository();

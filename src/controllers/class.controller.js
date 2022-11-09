@@ -1,31 +1,44 @@
 import Controller from './controller.js';
-import ClassModel from '../models/class.model.js';
-import TeacherModel from '../models/teacher.model.js';
+import classService from '../services/class.service.js';
+import responseWithData from '../transformers/responseWithData.js';
 
 class Class extends Controller {
   constructor() {
     super();
     this.create = this.create.bind(this);
+    this.get = this.get.bind(this);
+    this.classService = classService;
   }
 
   async create(req, res) {
     try {
-      // const validationSchema = {
-      //     firstName: "required|string|max:10|regExp:[a-zA-Z ]|alpha",
-      //     address: "required|string",
-      // };
+      const reqBody = req.body;
+      // set validation rules
+      const validationSchema = {
+        level: 'required|string|max:10|regExp:[a-zA-Z ]|alpha',
+        name: 'required|string',
+        teacherEmail: 'required|string|email',
+      };
+      // validate user inputs
+      const { validation, error } = await this.validateInput(reqBody, validationSchema);
+      if (!validation) {
+        return this.errorResponse(res, error, true);
+      }
 
-      // const result = await this.validateInput(req.body, validationSchema)
-      const response = await ClassModel.create(req.body);
-      this.jsonResponse(res, this.statusCode.CREATED, response);
+      const response = await this.classService.createClass(reqBody);
+      return this.jsonResponse(res, this.statusCode.CREATED, response);
     } catch (error) {
-      this.jsonResponse(res, this.statusCode.CREATED, error.message);
+      return this.errorResponse(res, error);
     }
   }
 
   async get(req, res) {
-    const response = await ClassModel.findAll({ include: TeacherModel });
-    return this.jsonResponse(res, this.statusCode.OK, response);
+    try {
+      const { rows } = await this.classService.fetchClasses();
+      return this.jsonResponse(res, this.statusCode.OK, responseWithData(rows));
+    } catch (error) {
+      return this.errorResponse(res, error);
+    }
   }
 }
 

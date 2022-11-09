@@ -2,6 +2,8 @@
  * verifijs is java script data validation library
  * written & published by myself
  */
-import verifijs from "verifijs"
+import VerifiJs from 'verifijs';
 
-export default new verifijs();
+const validation = new VerifiJs();
+validation.setBailAll(true);
+export default validation;

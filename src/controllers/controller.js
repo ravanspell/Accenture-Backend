@@ -1,3 +1,4 @@
+/* eslint-disable class-methods-use-this */
 /**
  * Controller base class.
  */
@@ -8,55 +9,61 @@ class Controller {
   constructor() {
     this.jsonResponse = this.jsonResponse.bind(this);
     this.validateInput = this.validateInput.bind(this);
+    this.errorResponse = this.errorResponse.bind(this);
+    this.validate = verifiJs;
   }
 
   // add http status codes as controller class property.
   statusCode = status;
 
   /*
-     * Return the response as a json
-     *
-     * @param {object} res
-     * @param {number} httpStatus
-     * @param {string} message
-     */
-  jsonResponse(res, httpStatus, message) {
-    switch (httpStatus) {
-      case status.CREATED:
-        res.status(status.CREATED).json({
-          message: message || 'success!',
-        });
-        break;
+       * Return the response as a json
+       *
+       * @param {object} res
+       * @param {number} httpStatus
+       * @param {string} message
+       */
+  jsonResponse(res, httpStatus, response) {
+    res.status(httpStatus || status.OK).json(response || {});
+  }
 
-      default:
-        break;
+  errorResponse(res, error, validation = false) {
+    let statusCode = status.INTERNAL_SERVER_ERROR;
+    let errorMessage = 'Something went wrong';
+    // we are not show detailed error messages in production env
+    // instead we show meaningful error message.
+    if (process.env.NODE_ENV === 'production' && validation === false) {
+      res.status(statusCode).json({
+        error: errorMessage,
+      });
+    } else {
+      // if it is a validation error then need to show detailed message.
+      if (validation) {
+        statusCode = status.UNPROCESSABLE_ENTITY;
+        errorMessage = error;
+      } else {
+        statusCode = error.statusCode || statusCode;
+        errorMessage = error.message;
+      }
+      res.status(statusCode).json({
+        error: errorMessage,
+      });
     }
   }
 
-//   errorResponse(res, error) {
-//     switch (httpStatus) {
-//       case status.CREATED:
-//         res.status(status.CREATED).json({
-//           message: message || 'success!',
-//         });
-//         break;
-
-//       default:
-//         break;
-//     }
-//   }
-
   /**
-     * Validate input data
-     * @param {object} data
-     * @param {object} schema
-     * @returns
-     */
+       * Validate input data
+       * @param {object} data
+       * @param {object} schema
+       * @returns promise
+       */
   async validateInput(data, schema) {
-    const { validation, error } = await verifiJs.check(data, schema);
-    if (!validation) {
-      throw Error(error);
+    const validate = await this.validate.check(data, schema);
+
+    if (!validate.validation) {
+      validate.error = validate.error.join();
     }
+    return validate;
   }
 }
 
