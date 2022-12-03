@@ -11,8 +11,12 @@ class TeacherRepository {
     return this.teacherModal.create(data);
   }
 
-  get() {
-    return this.teacherModal.findAndCountAll();
+  get(params = {}) {
+    return this.teacherModal.findAndCountAll(params);
+  }
+
+  update(data, params = {}) {
+    return this.teacherModal.update(data, params);
   }
 }
 

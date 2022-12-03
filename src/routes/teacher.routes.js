@@ -6,6 +6,7 @@ const router = Router();
 router
   .route('/')
   .post(teacherController.create)
-  .get(teacherController.get);
+  .get(teacherController.get)
+  .put(teacherController.update);
 
 export default router;
