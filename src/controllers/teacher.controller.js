@@ -19,7 +19,7 @@ class Teacher extends Controller {
         name: 'required|string|max:225|regExp:[a-zA-Z ]|alpha',
         email: 'required|string|email',
         subject: 'required|string',
-        contactNumber: 'required|string',
+        contactNumber: 'required|integer',
       };
       // validate user inputs
       const { validation, error } = await this.validateInput(reqBody, validationSchema);
